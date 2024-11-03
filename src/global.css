@@ -1,0 +1,34 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+    max-width: 100vw;
+    max-height: 100vh;
+    background-color: #121212;
+  }
+
+#root {
+  width: 100vw;
+  height: 100vh;
+  max-width: 100vw;
+  max-height: 100vh;
+  background-color: #121212;
+}
+
+/* Estilize a barra de rolagem para navegadores compatíveis */
+::-webkit-scrollbar {
+  width: 4px; /* Ajuste o tamanho da barra de rolagem */
+}
+
+/* Estilo da barra de rolagem */
+::-webkit-scrollbar-thumb {
+  background-color: #444444; /* Mude para a cor desejada */
+  border-radius: 10px; /* Arredonde as bordas, se preferir */
+}
+
+/* Cor ao passar o mouse */
+::-webkit-scrollbar-thumb:hover {
+  background-color: #444444; /* Cor ao passar o mouse */
+}
+
