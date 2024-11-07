@@ -4,7 +4,6 @@ import { cn } from '../../utils/cn';
 import { Icon } from '../../ui/icon/Icon';
 
 type CardProps = {
-  id: string;
   title: string;
   startDrag: boolean;
   isEditing?: boolean;
@@ -15,7 +14,6 @@ type CardProps = {
 };
 
 export function Card({
-  id,
   title,
   startDrag,
   isEditing = false,
