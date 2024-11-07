@@ -4,31 +4,15 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Frame
-        'frame-bg': '#181818',
-        'frame-border': '#333333',
-        // Card
-        'card-bg': '#2C2C2C',
+        frame: 'rgba(2,0,10,0.5)',
+        card: 'rgba(2,0,10,0.8)',
+        ghost: '#4D7DDC',
+        button: '#4D7DDC',
+        'button-hover': '#4068B6',
         'card-border': '#444444',
-        'card-hover': '#383838',
-        // Background
-        background: '#121212',
-        // Text
-        primary: '#EAEAEA',
-        secondary: '#B0B0B0',
-        // Background actions
-        'text-disabled': '#757575',
-        'primary-action': '#4CAF50',
-        'secondary-action': '#F44336',
-        highlight: '#FF9800',
-        'in-progress': '#FFC107',
-        completed: '#8BC34A',
-        overdue: '#FF5252',
-        review: '#03A9F4',
-      },
-      boxShadow: {
-        card: '0px 4px 10px rgba(0, 0, 0, 0.25)',
-        column: '0px 4px 15px rgba(0, 0, 0, 0.3)',
+        'input-border': 'rgba(234,234,234,0.3)',
+        'content-primary': '#EAEAEA',
+        'primary-action': '#0177FC',
       },
     },
   },

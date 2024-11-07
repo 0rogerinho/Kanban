@@ -1,54 +1,44 @@
-import { MouseEvent, useRef, useState } from 'react';
-import { Card } from './components/Card';
+import { MouseEvent, useEffect, useRef, useState } from 'react';
 import { Frame } from './components/Frame';
-import { AddBox } from './components/addBox';
+import { AddBox } from './components/AddBox';
+import { Card } from './components/Card';
 
 const kanbanCard = [
-  // BACKLOG
-  { title: 'Look into render bug in dashboard', id: '1', column: 'backlog' },
-  { title: 'SOX compliance checklist', id: '2', column: 'backlog' },
-  { title: '[SPIKE] Migrate to Azure', id: '3', column: 'backlog' },
-  { title: 'Document Notifications service', id: '4', column: 'backlog' },
   // TODO
   {
-    title: 'Research DB options for new microservice',
-    id: '5',
-    column: 'todo',
+    title:
+      'Comece colocando suas tarefas na coluna Todo. Isso é feito criando cartões com a descrição da tarefa e atribuindo-os à coluna Todo',
+    id: '1',
+    column: 'Todo',
   },
-  { title: 'Postmortem for outage', id: '6', column: 'todo' },
-  { title: 'Sync with product on Q3 roadmap', id: '7', column: 'todo' },
-
   // DOING
   {
-    title: 'Refactor context providers to use Zustand',
-    id: '8',
-    column: 'doing',
+    title:
+      'Quando você começar a trabalhar em uma tarefa, mova o cartão para a coluna "Doing". Isso indica que a tarefa está em andamento. Exemplo: "Lavar a louça"',
+    id: '2',
+    column: 'Doing',
   },
-  { title: 'Add logging to daily CRON', id: '9', column: 'doing' },
   // DONE
   {
-    title: 'Set up DD dashboards for Lambda listener',
-    id: '10',
-    column: 'done',
+    title:
+      ' Após terminar uma tarefa, mova o cartão para a coluna "Done" para indicar que a tarefa foi concluída. Exemplo: "Lavar a louça".',
+    id: '3',
+    column: 'Done',
   },
 ];
 
 const kanbanFrame = [
   {
     id: '1',
-    title: 'backlog',
+    title: 'Todo',
   },
   {
     id: '2',
-    title: 'todo',
+    title: 'Doing',
   },
   {
     id: '3',
-    title: 'doing',
-  },
-  {
-    id: '4',
-    title: 'done',
+    title: 'Done',
   },
 ];
 
@@ -62,17 +52,31 @@ function App() {
   const [data, setData] = useState(kanbanCard);
   const [dataFrame, setDataFrame] = useState(kanbanFrame);
 
+  const [editing, setEditing] = useState<string>();
+
   const [ghostStyles, setGhostStyles] = useState({});
   const [currentCard, setCurrentCard] = useState<CardProps>();
   const [startDrag, setStartDrag] = useState(false);
-
   const position = useRef({ posX: 0, posY: 0 });
   const divRef = useRef<HTMLDivElement>(null);
 
+  useEffect(() => {
+    const frames = localStorage.getItem('kanbanFrame');
+    const cards = localStorage.getItem('kanbanCard');
+    if (frames) {
+      setDataFrame(JSON.parse(frames));
+    } else {
+      setDataFrame(kanbanFrame);
+    }
+    if (cards) {
+      setData(JSON.parse(cards));
+    } else {
+      setData(kanbanCard);
+    }
+  }, []);
+
   function handleMouseMove(event: any) {
     const e = event as MouseEvent;
-
-    // console.log(e.clientX);
 
     if (e.clientX > 0 || e.clientY > 0) {
       if (!startDrag) setStartDrag(true);
@@ -94,18 +98,23 @@ function App() {
     window.removeEventListener('mouseup', handleMouseUp);
   }
 
-  function handleMouseDow(event: any) {
+  function handleMouseDow(event: any, card?: CardProps) {
     const e = event as MouseEvent<HTMLElement>;
+    const isEditing = card?.id === editing;
 
-    const div = e.currentTarget.getBoundingClientRect();
-    const posX = e.clientX - div.left;
-    const posY = e.clientY - div.top;
+    event.stopPropagation();
 
-    position.current = { posX, posY };
+    if (!isEditing) {
+      const div = e.currentTarget.getBoundingClientRect();
+      const posX = e.clientX - div.left;
+      const posY = e.clientY - div.top;
 
-    document.body.style.userSelect = 'none';
-    window.addEventListener('mousemove', handleMouseMove);
-    window.addEventListener('mouseup', handleMouseUp);
+      position.current = { posX, posY };
+
+      document.body.style.userSelect = 'none';
+      window.addEventListener('mousemove', handleMouseMove);
+      window.addEventListener('mouseup', handleMouseUp);
+    }
   }
 
   function handleMouseMoveCard(cardId: string, column: string) {
@@ -125,17 +134,19 @@ function App() {
         setCurrentCard({ ...currentCard, column: column });
 
         setData(copy);
-        // setData(copy); // Atualiza o estado com o array modificado
+        localStorage.setItem('kanbanCard', JSON.stringify(copy));
       }
     }
   }
 
   function handleNewFrame(string: string) {
     if (string !== '') {
-      setDataFrame([
+      const frame = [
         ...dataFrame,
         { id: (dataFrame.length + 1).toString(), title: string },
-      ]);
+      ];
+      setDataFrame(frame);
+      localStorage.setItem('kanbanFrame', JSON.stringify(frame));
     }
   }
 
@@ -150,6 +161,7 @@ function App() {
       });
 
       setData(copy);
+      localStorage.setItem('kanbanCard', JSON.stringify(copy));
     }
   }
 
@@ -159,46 +171,82 @@ function App() {
     if (currentCard && frame !== currentCard.column) {
       const filter = data.filter((c) => c.id !== currentCard?.id);
       setData([...filter, { ...currentCard, column: frame }]);
+      localStorage.setItem(
+        'kanbanCard',
+        JSON.stringify([...filter, { ...currentCard, column: frame }]),
+      );
     }
+  }
+
+  function handleEditCard(card: CardProps, newTitle: string) {
+    console.log('clicou em edit');
+
+    const updatedData = data.reduce<CardProps[]>((acc, item) => {
+      if (item.id === card.id) {
+        // Atualiza o title do item
+        acc.push({ ...item, title: newTitle });
+      } else {
+        // Mantém o item inalterado
+        acc.push(item);
+      }
+      return acc;
+    }, []);
+
+    setData(updatedData);
+    localStorage.setItem('kanbanCard', JSON.stringify(updatedData));
+  }
+
+  function handleDeleteCard(card: CardProps) {
+    const filter = data.filter((c) => c.id !== card.id);
+    setData(filter);
+    localStorage.setItem('kanbanCard', JSON.stringify(filter));
   }
 
   return (
     <div
-      className="size-full flex gap-4 p-4 overflow-x-auto"
+      className="size-full flex gap-4 p-4 overflow-x-auto overflow-y-hidden"
       onDragEnter={() => {}}
     >
       {dataFrame.map((frame) => (
         <Frame
           key={frame.id}
           title={frame.title}
+          cardLength={data.filter((c) => c.column === frame.title).length}
           onMouseEnter={() => startDrag && handleMouseEnter(frame.title)}
+          onAddFrame={(value) => handleNewCard(frame.title, value)}
         >
           {data.map((card) => (
             <>
               {card.column === frame.title && (
                 <div
-                  key={card.id}
+                  key={card.id + card.title}
                   ref={divRef}
                   className="relative cursor-default shrink-0 transition-all duration-300"
                   onMouseDown={(e) => {
-                    handleMouseDow(e), setCurrentCard(card);
+                    handleMouseDow(e, card), setCurrentCard(card);
                   }}
                   onMouseMove={() =>
                     startDrag && handleMouseMoveCard(card.id, frame.title)
                   }
                 >
-                  <Card startDrag={startDrag} {...card} />
+                  <Card
+                    key={card.id}
+                    startDrag={startDrag}
+                    onDelete={() => handleDeleteCard(card)}
+                    onChangeValue={(value) => handleEditCard(card, value)}
+                    isEditing={editing === card.id}
+                    onClickEdit={(editing) =>
+                      setEditing(editing ? card.id : undefined)
+                    }
+                    {...card}
+                  />
                   {startDrag && currentCard?.id === card.id && (
-                    <div className="absolute z-50 pointer-events-none size-full bg-background top-0 rounded-md" />
+                    <div className="absolute z-50 pointer-events-none size-full bg-ghost top-0 rounded-md" />
                   )}
                 </div>
               )}
             </>
           ))}
-          <AddBox
-            variant="card"
-            onValue={(value) => handleNewCard(frame.title, value)}
-          />
         </Frame>
       ))}
 
@@ -210,7 +258,11 @@ function App() {
         {currentCard && <Card startDrag={startDrag} {...currentCard} />}
       </div>
 
-      <AddBox variant="frame" onValue={(value) => handleNewFrame(value)} />
+      <AddBox
+        className="w-[300px]"
+        variant="frame"
+        onValue={(value) => handleNewFrame(value)}
+      />
     </div>
   );
 }

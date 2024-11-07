@@ -2,10 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
+/* *{
+  outline: 1px solid red;
+} */
+
 body {
     max-width: 100vw;
     max-height: 100vh;
-    background-color: #121212;
   }
 
 #root {
@@ -13,18 +16,23 @@ body {
   height: 100vh;
   max-width: 100vw;
   max-height: 100vh;
-  background-color: #121212;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-image: url('/image-1.png');
 }
 
 /* Estilize a barra de rolagem para navegadores compatíveis */
 ::-webkit-scrollbar {
-  width: 4px; /* Ajuste o tamanho da barra de rolagem */
+  width: 6px; /* Ajuste o tamanho da barra de rolagem */
+  padding: 10px;
+  height: 4px;
 }
 
 /* Estilo da barra de rolagem */
 ::-webkit-scrollbar-thumb {
-  background-color: #444444; /* Mude para a cor desejada */
-  border-radius: 10px; /* Arredonde as bordas, se preferir */
+  background-color: #4068B6; /* Mude para a cor desejada */
+  border-radius: 8px; /* Arredonde as bordas, se preferir */
+  height: 4px;
 }
 
 /* Cor ao passar o mouse */
