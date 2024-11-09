@@ -17,13 +17,14 @@ export function AddBox({ className, variant, onValue }: AddBoxProps) {
 
   const adjustTextAreaHeight = () => {
     if (textAreaRef.current) {
+      textAreaRef.current.style.height = 'auto'; // Redefine a altura
       textAreaRef.current.style.height = `${textAreaRef.current.scrollHeight}px`;
     }
   };
 
   useEffect(() => {
     adjustTextAreaHeight();
-  }, [value]);
+  }, [value, showInput]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -59,11 +60,14 @@ export function AddBox({ className, variant, onValue }: AddBoxProps) {
       )}
     >
       {showInput && (
-        <div className="space-y-0.5">
+        <div className="">
           <textarea
             ref={textAreaRef}
-            className="w-full min-h-[40px] rounded-md h-9 p-2 bg-frame focus:outline-none border border-input-border focus:border-button text-white border-card-bg overflow-hidden"
-            style={{ height: textAreaRef.current?.scrollHeight }}
+            className="w-full h-12 p-3 rounded-md bg-frame focus:outline-none border border-input-border focus:border-button text-white border-card-bg overflow-hidden"
+            style={{
+              height: textAreaRef.current?.scrollHeight,
+              maxHeight: textAreaRef.current?.scrollHeight,
+            }}
             value={value}
             onChange={({ target }) => setValue(target.value)}
           />
@@ -76,7 +80,9 @@ export function AddBox({ className, variant, onValue }: AddBoxProps) {
             </button>
             <button
               className="p-3 hover:bg-frame rounded-md text-white transition-all duration-300"
-              onClick={() => setShowInput(false)}
+              onClick={() => {
+                setShowInput(false);
+              }}
             >
               <Icon name="X" weight="bold" />
             </button>

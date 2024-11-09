@@ -7,6 +7,7 @@ type FrameProps = HTMLAttributes<HTMLDivElement> & {
   children: ReactNode;
   cardLength: number;
   onAddFrame?: (value: string) => void;
+  onMouseEnter?: () => void;
 };
 
 export function Frame({
@@ -15,6 +16,7 @@ export function Frame({
   children,
   cardLength,
   onAddFrame,
+  onMouseEnter,
   ...props
 }: FrameProps) {
   const divRef = useRef<HTMLDivElement>(null);
@@ -32,7 +34,10 @@ export function Frame({
         <p className="text-content-primary">{cardLength}</p>
       </div>
 
-      <div className="bg-frame rounded-lg flex-1 h-0 flex flex-col overflow-hidden pt-3.5">
+      <div
+        className="bg-frame rounded-lg flex-1 h-0 flex flex-col overflow-hidden pt-3.5"
+        onMouseEnter={onMouseEnter}
+      >
         <div
           ref={divRef}
           className="space-y-2 flex-1 pl-4 py-0.5 pr-1.5 mr-1 h-0 overflow-y-auto [scrollbarGutter:stable]"

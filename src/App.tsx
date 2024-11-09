@@ -252,7 +252,7 @@ function App() {
 
       {/* Ghost */}
       <div
-        className="fixed hidden z-[9999] pointer-events-none rotate-[3deg] opacity-80 shadow-md"
+        className="fixed hidden z-[9999] pointer-events-none rotate-[3deg] opacity-90 shadow-md"
         style={{ ...ghostStyles, width: divRef.current?.offsetWidth }}
       >
         {currentCard && <Card startDrag={startDrag} {...currentCard} />}

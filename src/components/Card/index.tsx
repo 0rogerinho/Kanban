@@ -65,7 +65,7 @@ export function Card({
   };
 
   return (
-    <div ref={containerRef}>
+    <div className="max-w-[268px]" ref={containerRef}>
       <div className={cn('h-auto', isEditing && 'hidden')}>
         <div
           className={cn(
