@@ -63,6 +63,7 @@ export function AddBox({ className, variant, onValue }: AddBoxProps) {
         <div className="">
           <textarea
             ref={textAreaRef}
+            rows={1}
             className="w-full h-12 p-3 rounded-md bg-frame focus:outline-none border border-input-border focus:border-button text-white border-card-bg overflow-hidden"
             style={{
               height: textAreaRef.current?.scrollHeight,

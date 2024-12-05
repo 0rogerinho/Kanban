@@ -59,6 +59,7 @@ function App() {
   const [startDrag, setStartDrag] = useState(false);
   const position = useRef({ posX: 0, posY: 0 });
   const divRef = useRef<HTMLDivElement>(null);
+  console.log(ghostStyles);
 
   useEffect(() => {
     const frames = localStorage.getItem('kanbanFrame');
@@ -117,24 +118,35 @@ function App() {
     }
   }
 
-  function handleMouseMoveCard(cardId: string, column: string) {
+  function handleMouseMoveCard(e: MouseEvent, cardId: string, column: string) {
+    const div = e.currentTarget.getBoundingClientRect();
+    const posY = e.clientY - div.top;
+    const half = div.height / 2;
+
     // Encontrar o cartão atual e a posição do cartão para mover
     if (currentCard && currentCard?.id !== cardId) {
       const copy = [...data]; // Faz uma cópia do array `data`
       const moveToCardIndex = copy.findIndex((c) => c.id === currentCard?.id);
       const targetCardIndex = copy.findIndex((c) => c.id === cardId);
+      const moveToCard = { ...copy[moveToCardIndex], column };
 
-      if (moveToCardIndex !== -1 && targetCardIndex !== -1) {
-        const moveToCard = { ...copy[moveToCardIndex], column };
-        // Remove o cartão do array na posição original
-        copy.splice(moveToCardIndex, 1);
+      function moveTask(targetPosition: number) {
+        if (currentCard) {
+          console.log('entrou');
+          copy.splice(moveToCardIndex, 1);
 
-        copy.splice(targetCardIndex, 0, moveToCard);
+          copy.splice(targetPosition, 0, moveToCard);
+          setCurrentCard({ ...currentCard, column: column });
 
-        setCurrentCard({ ...currentCard, column: column });
+          setData(copy);
+          localStorage.setItem('kanbanCard', JSON.stringify(copy));
+        }
+      }
 
-        setData(copy);
-        localStorage.setItem('kanbanCard', JSON.stringify(copy));
+      if (posY < half && targetCardIndex - 1 !== moveToCardIndex) {
+        moveTask(targetCardIndex - 1);
+      } else if (posY > half && targetCardIndex + 1 !== moveToCardIndex) {
+        moveTask(targetCardIndex + 1);
       }
     }
   }
@@ -225,8 +237,8 @@ function App() {
                   onMouseDown={(e) => {
                     handleMouseDow(e, card), setCurrentCard(card);
                   }}
-                  onMouseMove={() =>
-                    startDrag && handleMouseMoveCard(card.id, frame.title)
+                  onMouseMove={(e) =>
+                    startDrag && handleMouseMoveCard(e, card.id, frame.title)
                   }
                 >
                   <Card
